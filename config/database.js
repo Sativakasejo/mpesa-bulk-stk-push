@@ -30,4 +30,7 @@ async function createTransactionTable() {
     }
 }
 
+// Call the function to create the table
+createTransactionTable();
+
 module.exports = { pool, createTransactionTable };

@@ -1,5 +1,6 @@
 const axios = require('axios');
-const pool = require('../config/database');
+const { pool } = require('../config/database');
+const { connectQueue, publishToQueue } = require('../config/rabbitmq');
 require('dotenv').config();
 
 const getAccessToken = async () => {
@@ -37,18 +38,17 @@ const sendSTKPush = async (phoneNumber, amount) => {
 };
 
 const processPayment = async (req, res) => {
-    const { phoneNumber, amount } = req.body;
+    const { phoneNumbers, amount } = req.body;
 
     try {
-        const response = await sendSTKPush(phoneNumber, amount);
+        const channel = await connectQueue();
 
-        // Save transaction to database
-        await pool.query(
-            'INSERT INTO transactions (phone_number, amount, checkout_request_id, status) VALUES (?, ?, ?, ?)',
-            [phoneNumber, amount, response.CheckoutRequestID, 'PENDING']
-        );
+        for (const phoneNumber of phoneNumbers) {
+            const message = JSON.stringify({ phoneNumber, amount });
+            await publishToQueue(channel, message);
+        }
 
-        res.status(200).json({ message: 'STK Push initiated', data: response });
+        res.status(200).json({ message: 'STK Push requests queued successfully' });
     } catch (error) {
         console.error('STK Push Error:', error);
         res.status(500).json({ error: 'STK Push initiation failed' });

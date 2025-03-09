@@ -12,4 +12,13 @@ const connectQueue = async () => {
     }
 };
 
-module.exports = connectQueue;
+const publishToQueue = async (channel, message) => {
+    try {
+        await channel.sendToQueue(process.env.QUEUE_NAME, Buffer.from(message), { persistent: true });
+        console.log('Message published to queue:', message);
+    } catch (error) {
+        console.error('Error publishing message to queue:', error);
+    }
+};
+
+module.exports = { connectQueue, publishToQueue };
