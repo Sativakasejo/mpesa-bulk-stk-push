@@ -55,4 +55,20 @@ const processPayment = async (req, res) => {
     }
 };
 
-module.exports = { processPayment, sendSTKPush };
+const retryFailedTransactions = async () => {
+    try {
+        const [rows] = await pool.query('SELECT * FROM transactions WHERE status = "FAILED"');
+        const channel = await connectQueue();
+
+        for (const transaction of rows) {
+            const message = JSON.stringify({ phoneNumber: transaction.phone_number, amount: transaction.amount });
+            await publishToQueue(channel, message);
+        }
+
+        console.log('Retrying failed transactions...');
+    } catch (error) {
+        console.error('Error retrying failed transactions:', error);
+    }
+};
+
+module.exports = { processPayment, sendSTKPush, retryFailedTransactions };

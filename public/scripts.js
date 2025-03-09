@@ -12,6 +12,7 @@ document.getElementById('uploadForm').addEventListener('submit', async (event) =
         const result = await response.json();
         alert(result.message);
         fetchReport();
+        fetchStatistics();
     } catch (error) {
         console.error('Error uploading file:', error);
     }
@@ -40,4 +41,17 @@ async function fetchReport() {
     }
 }
 
+async function fetchStatistics() {
+    try {
+        const response = await fetch('/api/v1/payments/statistics');
+        const stats = await response.json();
+        document.getElementById('totalTransactions').textContent = stats.total;
+        document.getElementById('successfulTransactions').textContent = stats.successful;
+        document.getElementById('failedTransactions').textContent = stats.failed;
+    } catch (error) {
+        console.error('Error fetching statistics:', error);
+    }
+}
+
 fetchReport();
+fetchStatistics();

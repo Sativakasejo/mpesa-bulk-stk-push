@@ -16,6 +16,7 @@ async function createTransactionTable() {
             amount DECIMAL(10,2) NOT NULL,
             checkout_request_id VARCHAR(50) NOT NULL,
             status ENUM('PENDING', 'SUCCESS', 'FAILED') DEFAULT 'PENDING',
+            result_desc VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
     `;
