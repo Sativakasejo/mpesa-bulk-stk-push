@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MPesa Bulk STK Push Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>MPesa Bulk STK Push Dashboard</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="fileInput">Upload Phone Numbers (CSV):</label>
+        <input type="file" id="fileInput" name="fileInput" accept=".csv">
+        <button type="submit">Upload</button>
+    </form>
+    <div id="report">
+        <h2>Transaction Report</h2>
+        <table id="reportTable">
+            <thead>
+                <tr>
+                    <th>Phone Number</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Result Description</th>
+                    <th>Created At</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Report data will be inserted here -->
+            </tbody>
+        </table>
+    </div>
+    <script src="scripts.js"></script>
+</body>
+</html>

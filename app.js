@@ -1,15 +1,21 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const paymentRoutes = require('./routes/paymentRoutes');
+const webhookRoutes = require('./routes/webhookRoutes');
 const { createTransactionTable } = require('./config/database');
 const { connectQueue } = require('./config/rabbitmq');
 const { sendSTKPush } = require('./controllers/paymentController');
+const path = require('path');
 
 dotenv.config();
 const app = express();
 app.use(express.json());
 
+// Serve static files
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.use('/api/v1/payments', paymentRoutes);
+app.use('/api/webhook', webhookRoutes);
 
 // Call the function to create the table
 createTransactionTable();
@@ -39,4 +45,11 @@ startConsumer();
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+}).on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use.`);
+        process.exit(1);
+    } else {
+        throw err;
+    }
 });
